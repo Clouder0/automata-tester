@@ -47,7 +47,6 @@ class DFA:
                 raise ValueError(f"Final state {s.name} not in state list")
         if self.start_state not in self.state:
             raise ValueError(f"Start state {self.start_state.name} not in state list")
-
     
     def add_state(self, state: State):
         self.state.append(state)
