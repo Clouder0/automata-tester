@@ -1,10 +1,15 @@
 # automata-tester
 
-简单的 DFA、NFA 测试工具
+简单的 DFA、NFA 测试工具：
+
+* 创建 accepter automata 对输入字符串进行检验。
+* 解析 mermaid 的 stateDiagram 语法，获取 alphabet、state state、final states、transition、all_states，生成相应的 DFA/NFA(自动判断是否为 NFA)。
+* NFA 目前暂且 TODO.
+* 根据 alphabet 自动生成随机数据、传入自定义检验函数 test_func 与 automata 进行测试，保证 automata 符合语义预期。
 
 这是为了检验 Formal Language and Automata 这门学校课程中作业解答正确性而开发的小工具(?).
 
-支持了解析 mermaid 并生成相应的 DFA、NFA，生成随机数据进行测试检验。
+如果你还不了解 mermaid，可以[点击这里](https://mermaid.js.org/syntax/stateDiagram.html)了解一下。Mermaid 用来画 State Diagram 等常用的图非常方便，我的作业中的自动机、以及 README 中那张图都是使用 Mermaid 绘制的。
 
 使用方法很简单，详细见 `main.py`. 这里说明一下 mermaid 的标记方法：
 
