@@ -31,6 +31,7 @@ class State:
             for d in dest:
                 print(f"{self.name} -> {d.name}: {symbol}")
 
+status_num = 0
 class NFA:
     state: list[State]
     alphabet: list[str]
@@ -56,7 +57,9 @@ class NFA:
         self.state.append(state)
     
     def gen_state(self) -> State:
-        s = State(self.alphabet)
+        global status_num
+        status_num += 1
+        s = State(str(status_num), self.alphabet)
         self.state.append(s)
         return s
 
@@ -68,6 +71,8 @@ class NFA:
                 if empty_step > len(self.state):  # avoid infinite empty loop
                     return False
                 for dest in current_state.transitions[""]:
+                    if verbose:
+                        print(f"{current_state.name} -> {dest.name}: ε")
                     if self.search(dest, left_str, verbose, empty_step + 1):
                         return True
                 return False
@@ -92,4 +97,15 @@ class NFA:
         print("Final states:")
         for s in self.final_states:
             print(s.name)
+    
+    def to_mermaid(self):
+        res = "stateDiagram-v2"
+        for s in self.state:
+            for symbol, dest_list in s.transitions.items():
+                for dest in dest_list:
+                    res += f"\n{s.name} --> {dest.name}: {symbol}"
+        res += f"\n[*] --> {self.start_state.name}"
+        for s in self.final_states:
+            res += f"\n{s.name} --> [*]"
+        return res
 

@@ -73,3 +73,13 @@ class DFA:
         for s in self.final_states:
             print(s.name)
 
+    def to_mermaid(self):
+        res = "stateDiagram-v2"
+        for s in self.state:
+            for symbol, dest in s.transitions.items():
+                res += f"\n{s.name} --> {dest.name}: {symbol}"
+        res += f"\n[*] --> {self.start_state.name}"
+        for s in self.final_states:
+            res += f"\n{s.name} --> [*]"
+        return res
+
