@@ -9,7 +9,7 @@ class State:
         self.name = name
         self.transitions = {}
         self.alphabet = alphabet
-    
+        
     def add_transition(self, symbol: str, dest: State):
         if symbol in self.transitions:
             raise ValueError(f"Transition {symbol} already exists")
@@ -20,7 +20,7 @@ class State:
     def check(self):
         for symbol in self.alphabet:
             if symbol not in self.transitions:
-                raise ValueError(f"Transition {symbol} not defined")
+                raise ValueError(f"Transition {symbol} not defined for state {self.name}")
     
     def display(self):
         print(f"State {self.name}:")

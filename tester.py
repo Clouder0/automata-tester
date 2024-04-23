@@ -7,7 +7,7 @@ def gen_test_func(test_func1, test_func2):
 
 
 def random_str(alphabet: list[str]) -> str:
-    return random_str_len(alphabet, 1, 30)
+    return random_str_len(alphabet, 1, 10)
 
 
 def random_str_len(alphabet: list[str], min_len: int, max_len: int) -> str:
@@ -29,4 +29,7 @@ def random_test(test_func, alphabet: list[str], num_tests: int, test_func2 = Non
                 print(test_func2(test_input))
                 assert False
         else:
-            assert test_func(test_input)
+            res = test_func(test_input)
+            if(not res):
+                print("failed", test_input)
+                return

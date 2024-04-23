@@ -2,6 +2,8 @@ from collections import defaultdict
 from dfa import DFA, State as DFAState
 import re
 
+from nfa import NFA, State as NFAState
+
 
 test_input = """stateDiagram-v2
 
@@ -22,9 +24,9 @@ Q2 --> [*]
 Q4 --> [*]"""
 
 # parse mermaid to generate DFA
-edge_regex = re.compile(r"^#?(\w+?|\[\*\])\s*-->\s*(\w+?|\[\*\])(?::\s*(.+))?$", re.MULTILINE)
+edge_regex = re.compile(r"^#?([,\w]+?|\[\*\])\s*-->\s*([,\w]+?|\[\*\])(?::\s*(.+))?$", re.MULTILINE)
 # group1: source state; group2: dest state; group3: transition symbol
-def parse_mermaid(mermaid: str) -> DFA:
+def parse_mermaid(mermaid: str, force_nfa: bool=False) -> DFA:
     # judge if one state has multiple transitions with the same symbol to judge DFA/NFA
     matches = edge_regex.findall(mermaid)
     state_map: dict[str, dict[str, list[str]]] = defaultdict(dict)
@@ -65,14 +67,45 @@ def parse_mermaid(mermaid: str) -> DFA:
         if is_nfa:
             break
     
+    is_nfa = force_nfa or is_nfa
     if is_nfa:
-        pass
+        n = NFA(list(alphabet))
+        state_map_obj: dict[str, NFAState] = {}
+        
+        for s in state_map.keys():
+            if s not in state_map_obj:
+                state_map_obj[s] = NFAState(s, alphabet)
+        
+        for p in state_map.values():
+            for e in p.values():
+                for s in e:
+                    if s not in state_map_obj:
+                        state_map_obj[s] = NFAState(s, alphabet)
+        
+        for s, trans_dict in state_map.items():
+            for trans, dest_list in trans_dict.items():
+                state_map_obj[s].add_transitions(trans,list(map(lambda x: state_map_obj[x], dest_list)))
+
+        for s in state_map_obj.values():
+            n.add_state(s)
+        if len(start_states) != 1:
+            raise ValueError("Only one start state is allowed")
+        n.start_state = state_map_obj[start_states[0]]
+        n.final_states = list(map(lambda x: state_map_obj[x], final_states))
+        return ("NFA", n)
     else:
         d = DFA(list(alphabet))
         state_map_obj: dict[str, DFAState] = {}
 
         for s in state_map.keys():
             state_map_obj[s] = DFAState(s, alphabet)
+
+        for p in state_map.values():
+            for e in p.values():
+                for s in e:
+                    if s not in state_map_obj:
+                        state_map_obj[s] = DFAState(s, alphabet)
+            
         
         # add transitions
         for s, trans_dict in state_map.items():
